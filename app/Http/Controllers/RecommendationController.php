@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\RecommendationRequest;
+use App\Http\Requests\UpdateRecommendationRequest;
 use App\Models\Recommendation;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -159,7 +159,7 @@ class RecommendationController extends Controller
      *   "message": "Terjadi kesalahan: error detail"
      * }
      */
-    public function update(RecommendationRequest $request, string $id)
+    public function update(UpdateRecommendationRequest $request, string $id)
     {
         $recommendation = Recommendation::find($id);
 
@@ -174,16 +174,22 @@ class RecommendationController extends Controller
             $data = $request->validated();
 
             if ($request->hasFile('image_path')) {
+                Log::info('File upload detected.');
+
+                // Hapus file lama
                 if ($recommendation->image_path && Storage::disk('public')->exists($recommendation->image_path)) {
                     Storage::disk('public')->delete($recommendation->image_path);
+                    Log::info('Old image deleted: ' . $recommendation->image_path);
                 }
 
-                $filename = time() . '_' . Str::slug($data['title']) . '.' . $request->file('image_path')->extension();
+                $slugTitle = isset($data['title']) ? Str::slug($data['title']) : Str::slug($recommendation->title);
+                $filename = time() . '_' . $slugTitle . '.' . $request->file('image_path')->extension();
                 $path = $request->file('image_path')->storeAs('recommendations', $filename, 'public');
+
+                Log::info('New image stored: ' . $path);
+
                 $data['image_path'] = $path;
             }
-
-            $recommendation->update($data);
 
             return response()->json([
                 'status_code' => 200,
