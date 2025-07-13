@@ -22,22 +22,17 @@ class RecommendationRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'title'         => 'required|string|max:255',
+            'title'         => 'sometimes|required|string|max:255',
             'ticket'        => 'nullable|numeric|min:0',
             'food'          => 'nullable|numeric|min:0',
             'transport'     => 'nullable|numeric|min:0',
             'others'        => 'nullable|numeric|min:0',
-            'location_name' => 'required|string|max:255',
+            'location_name' => 'sometimes|required|string|max:255',
             'latitude'      => 'nullable|numeric|between:-90,90',
             'longitude'     => 'nullable|numeric|between:-180,180',
-            'description'   => 'nullable|string'
+            'description'   => 'nullable|string',
+            'image_path' => 'sometimes|required|image|mimes:jpg,jpeg,png|max:2048'
         ];
-
-        if ($this->method() === 'POST') {
-            $rules['image_path'] = 'required|image|mimes:jpg,jpeg,png|max:2048';
-        } else {
-            $rules['image_path'] = 'nullable|image|mimes:jpg,jpeg,png|max:2048';
-        }
 
         return $rules;
     }
