@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('location_name', 150);
             $table->decimal('latitude');
             $table->decimal('longitude');
+            $table->enum('status', ['pending', 'selesai'])->default('pending');
             $table->timestamps();
         });
     }
