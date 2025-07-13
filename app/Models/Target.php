@@ -21,7 +21,8 @@ class Target extends Model
         'image_path',
         'location_name',
         'latitude',
-        'longitude'
+        'longitude',
+        'status'
     ];
 
     public function user()
